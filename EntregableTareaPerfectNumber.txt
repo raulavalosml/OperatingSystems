@@ -1,0 +1,114 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+public class PerfectNumberE{
+	
+	//estos dinamicos porque no sabemos la posible cantidad
+	public ArrayList<Integer> myDivisors= new ArrayList<Integer>();
+	
+	//de este si vamos a saber la cantidad
+	public Thread[] aThreads; 
+	
+	public int number;//el equivalente a n que es el numero a checar
+	public int p;// numero de hilos
+		
+	public class ThreadRD extends Thread{
+		
+		int num;
+		int min;
+		int max;
+		
+		public ThreadRD(String s,int n,int min,int max) {
+			super(s);
+			System.out.println(""+getName());
+			
+			this.num=n;
+			this.min=min;
+			this.max=max;
+		}
+		
+		@Override
+		public void run() {
+			synchronized(aThreads) {
+				for(int i=min;i<max;i++) {
+					try {
+						if(num%i==0) {
+							myDivisors.add(i);
+						}
+					}
+					catch(ArithmeticException ae) {
+						
+					}	
+				}	
+			}	
+		}	
+	}
+	
+	private void createThread(int n1,int p1){
+		int max=0;
+		int min=0;
+
+		for(int i=0;i<p1;i++) {
+			max=max+(n1/p1);
+			min=max-(n1/p1);
+			//primer parametro es el nombre del thread
+			//segundo parametro el valor a comprobar si es perfecto
+			//tercer y cuarto valor los limites de cada thread para que evalue a esa cantidad de numeros el mismo hilo
+			aThreads[i]= new Thread(new ThreadRD("Thread_"+i,n1,min,max));
+			aThreads[i].start();
+			
+		}
+		//para que se pongan en orden
+		for(int i=0;i<p1;i++) {
+			try {
+				aThreads[i].join();
+			}
+			catch(InterruptedException ie) {
+				System.out.println(ie);
+			}	
+		}
+	}
+	
+	
+	public void checkIPN(ArrayList<Integer> list,int n) {
+		int suma=0;
+		System.out.print("Lista de divisores: ");
+		for(int i=0;i<list.size();i++) {
+			System.out.print(list.get(i)+" ");
+			suma=suma+list.get(i);
+		}
+		if(suma==n) {
+			System.out.println("\nEl numero "+n+ " si es un numero perfecto . . . ");
+		}
+		else {
+			System.out.println("\nEl numero "+n+ " no es un numero perfecto . . . ");
+		}
+	}
+	
+	public static void main(String args[]){
+		
+		//constructor
+		PerfectNumberE objT= new PerfectNumberE();
+		
+		//primer input
+		Scanner input_n= new Scanner(System.in);
+		System.out.println("Numero a Revisar (n): ");
+		objT.number=input_n.nextInt();
+		
+		//segundo input
+		//se valida que no sea mayor el numero de threads al del numero a calcular
+		objT.p=objT.number+1;
+		Scanner input= new Scanner(System.in);
+		while(objT.p>objT.number) {
+			System.out.println("Numero de Threads (p): ");
+			objT.p=input.nextInt();
+		}
+		
+		//inicializa el arreglo de threads
+		objT.aThreads= new Thread[objT.p];
+		
+		objT.createThread(objT.number,objT.p);
+		System.out.println("Proceso Padre-->");
+		objT.checkIPN(objT.myDivisors,objT.number);	
+	}
+
+}

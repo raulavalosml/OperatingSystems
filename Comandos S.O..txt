@@ -1,0 +1,39 @@
+Comandos en terminal ctrl + alt + t
+
+ls : muestra todas carpetas que aparecen
+ls [Aa] : para las carpetas con esa letra
+
+Comandos de Shell
+	command argument1 argument2
+
+Sintaxis de un comando
+	command option1 option2 ... argument1 argument2
+
+uname : muestra informacion sobre el sistema operativo
+uname -o
+uname --hardware-platform
+uname --all
+man uname : manunal de uname
+
+man COMMAND_NAME :  muestra el manual del comando seleccionado	
+
+ls/usr/local/b <Tab>
+ ---> lo acompleta a bin
+
+COMODINES:
+	(*) para todos los que cumplan algo
+	(?) coincide exactamente con un catacter
+
+
+#!/bin/bash -->para poder llamar desde terminal
+
+luego en la terminal colocar: bash NombreArchivo.sh
+
+y ya aparece en la terminal
+
+Comandos para archivo sh
+
+read var1 //para leer de teclado
+echo "Lo que vas a decir" // para escribir
+
+

@@ -1,0 +1,14 @@
+
+1. Ver archivos en un directorio
+	ls NOMBRE_DIRECTORIO
+
+2. Crear un archivo en linux
+	cat > NOMBRE_ARCHIVO.txt
+	
+	//abre espacio para escribir
+	//para terminar ctrl+d
+
+	//abir archivo
+	cat NOMBRE_ARCHIVO.txt
+
+3. Iniciar y cerrar sesión con mi nombre de usuario Linux

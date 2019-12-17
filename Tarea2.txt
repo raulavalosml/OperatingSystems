@@ -1,0 +1,163 @@
+Raúl Iván Ávalos Muñoz Ledo
+Daniel Alejandro Villegas Romero
+
+-----EJERCICIO 1-----
+//NOTA IMPORTANTE: Se divide en 2 partes, el codigo en C y el codigo BASH que se llama desde C
+
+//CODIGO EN C
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
+int main(int argc, char *argv[]){
+    pid_t pid1, pid2;
+    int status1, status2;
+    if ( (pid1=fork()) == 0 ) /* hijo */
+    {
+        printf("Soy el primer hijo (%d, hijo de %d)\n", getpid(), getppid());
+        //tambien debe de mostrar en la terminal la lista de todos los archivos de su carpeta con el tamaño de cada uno
+
+        /* ESTE NO DA EL TAMAÑO SOLO LOS ARCHIVOS
+        DIR *d;
+        struct dirent *dir;
+        d = opendir(".");
+        if (d)
+        {
+            while ((dir = readdir(d)) != NULL) {
+            printf("%s\n", dir->d_name);
+
+            }
+            closedir(d);
+        }
+        */
+
+        //ESTE YA DA TODO
+        char *myargs[2];
+        myargs[0] = strdup("bash");
+        myargs[1] = strdup("shellTarea2.sh");
+        myargs[2] = NULL;
+        execvp(myargs[0], myargs);
+
+
+        printf("Ya acabo el primer hijo (%d, hijo de %d)\n", getpid(), getppid());
+    }
+    else /* padre */
+        if ( (pid2=fork()) == 0 ) /* segundo hijo*/
+        {
+            printf("Soy el segundo hijo (%d, hijo de %d)\n", getpid(), getppid());
+            //tambien debe  contar las líneas de código presentes en el archivo main.c
+
+            FILE *fp = fopen("Ejercicio1.c","r"); //se refiere al numero de lineas de este programa
+            int ch=0;
+            int lines=0;
+
+            if (fp == NULL)
+                printf("Error en archivo...\n");
+
+            lines++;
+            while(!feof(fp))
+            {
+              ch = fgetc(fp);
+              if(ch == '\n')
+              {
+                lines++;
+              }
+            }
+
+            fclose(fp);
+            printf("Numero de lineas en Ejercicio1.c: %d\n", lines);
+
+            //Redireccionar a otro archivo... llamado prueba.txt
+
+            FILE *fptr;
+            // use appropriate location if you are using MacOS or Linux
+            fptr = fopen("prueba.txt","w");
+            if(fptr == NULL)
+            {
+                printf("Error!");
+                exit(1);
+            }
+            fprintf(fptr,"Numero de lineas en Ejercicio1.c: %d\n", lines);
+            fclose(fptr);
+
+            printf("Ya acabo el segundo hijo (%d, hijo de %d)\n", getpid(), getppid());
+        }
+        else{ /* padre */
+            waitpid(pid1, &status1, 0); /* Esperamos al primer hijo */
+            waitpid(pid2, &status2, 0); /* Esperamos al segundo hijo */
+            printf("Soy el padre (%d, hijo de %d)\n", getpid(), getppid());}}
+
+//CODIGO DE BASH
+
+#!/bin/bash
+echo "Ficheros del directorio actual y su tamaño";
+archivos=$(find -type f); #find comando para buscar archivos y f para archivos de todo tipo
+for i in $archivos;do
+	num_lineas=$(wc -l $i | cut -d" " -f1); #wc te da info del 
+						#archivo -l solo del numero de lienas
+						#cut es un tokenizer -f1 te para el 1ro tokenizado
+	echo "Nombre del archivo: $i";
+	echo "Contiene $num_lineas lineas";
+	echo " ";
+done;
+
+
+
+
+
+
+-----EJERCICIO 2-----
+struct numeros {
+	int *arreglo;
+	int inicio;
+	int fin; };
+
+void *ordena(void *arg) {
+	struct numeros estructura = *(struct numeros *) arg;
+	int i, j, *ptr;
+	ptr=(int*)malloc(10*sizeof(int));
+	ptr = estructura.arreglo;
+
+	for(i = estructura.inicio; i <= estructura.fin - 1; i++) {
+		for(j = i + 1; j <= estructura.fin; j++) {
+			if (*(ptr + i) > *(ptr + j)) {
+				int temp = *(ptr + i);
+				*(ptr + i) = *(ptr + j);
+				*(ptr + j) = temp; } } } }
+
+int main(int argc, char *argv[]) {
+	int i, listaNumeros[10] = {5, 8, 1, 4, 3, 9, 6, 7, 2, 0};
+	pthread_t p1, p2, p3;
+	struct numeros est1 = {listaNumeros, 0, 2};
+	struct numeros est2 = {listaNumeros, 3, 5};
+	struct numeros est3 = {listaNumeros, 6, 9};
+	void *e1 = &est1;
+	void *e2 = &est2;
+	void *e3 = &est3;
+	printf("main: begin\n");
+	pthread_create(&p1, NULL, ordena, e1);
+	pthread_create(&p2, NULL, ordena, e2);
+	pthread_create(&p3, NULL, ordena, e3);
+	pthread_join(p1, NULL);
+	pthread_join(p2, NULL);
+	pthread_join(p3, NULL);
+	printf("main: done with both\n");
+	//abrir archivo
+	FILE *fp;
+    fp = fopen("prueba.txt", "w+");
+    //fprintf(fp, "This is hola for fprintf...\n");
+    //fputs("This is hola for fputs...\n", fp);
+
+
+	for(i = 0; i <= 9; i++)
+    {
+        printf("%d, ", listaNumeros[i]);
+        fprintf(fp, "%d, ", listaNumeros[i]);
+    }
+
+	//printf("%d\n", listaNumeros[9]);
+
+	//cerrar archivo
+	fclose(fp);
+}

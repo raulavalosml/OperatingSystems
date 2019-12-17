@@ -1,0 +1,92 @@
+Daniel Alejandro Villegas Romero A01365286
+Raúl Iván Ávalos Muñoz Ledo A01364940
+
+-----Ejercicio 1-----
+
+#!/bin/bash
+#PRIMERO SE PONE EL FILE Y DESPUÉS LA PALABRA
+FILE=$1
+Word=$2
+#read $FILE using file descriptors
+grep -n -e "$Word" $FILE >AuxGrep.txt
+exec 3<&0
+exec 0<AuxGrep.txt
+i=0
+while read line
+do
+
+	if [[ $i -le 4 ]]; then
+	#use $line variable to process line
+	#grep '$Word' $FILE
+		echo $line
+	else break
+	fi
+i=$i+1;
+done
+exec 0<&3
+
+-----Ejercicio 2-----
+#!/bin/bash
+
+FILE=$1
+TIPO=$2
+
+A=-a
+Z=-z
+
+if [[ $TIPO = $A ]]; then
+	sort -d $FILE
+elif [[ $TIPO = $Z ]]; then
+	sort -r $FILE
+fi
+
+-----Ejercicio 3-----
+#!/bin/bash
+archivo=$1
+
+
+if [[ -f $archivo ]];
+	then
+		echo "Si existe comprimido";
+		rm $archivo;
+		echo "Se borro";
+elif [[ -d $archivo ]];
+	then 
+		echo "Si existe como directorio";
+		rm -r $archivo;
+else
+	echo "No existe nada relacionado con el nombre";
+	touch $archivo
+	gzip $archivo;
+	echo "Archivo se comprimio";
+	
+fi
+
+-----Ejercicio 4-----
+
+#!/bin/bash
+
+NUM=$1
+
+i=1;
+
+while [[ $i -le 10 ]]
+do
+	r=$(( $i * $NUM))
+	echo "$r"
+	i=$(( $i + 1))
+done
+
+-----Ejercicio 5-----
+#!/bin/bash
+NUMERO=$1
+I=1;
+
+while [[ $i -le 10 ]]
+	do
+		r-$(( $i * $NUMERO))
+		echo "$r"
+		i=$(( $i + 1))
+	done
+
+

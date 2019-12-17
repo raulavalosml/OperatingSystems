@@ -1,0 +1,155 @@
+import java.util.*; 
+
+public class PerfectNumberUsingFor{
+
+	public ArrayList<Integer> myDivisors = new ArrayList<Integer>();
+	public ArrayList<Thread> myThreads = new ArrayList<Thread>();
+	int contadorEsp = 0;
+	int contadorDivisorEsp = 0;
+	int numAnteriorEsp = 0;
+	
+	public class ThreadRul extends Thread{
+		
+		private int n;
+		private int divisorComprobar;
+		private int contadorNormal;
+		private int contadorAux;
+		private int p;
+		public ThreadRul(int divisor, int number, int cN, int cA, int numThreads){
+			n = number;
+			divisorComprobar = divisor;
+			contadorNormal = cN;
+			contadorAux = cA;
+			p = numThreads;
+		}
+		
+		public void run(){
+			for(int i=numAnteriorEsp; i<contadorNormal+numAnteriorEsp; i++)
+			{
+				try{
+					if(n%divisorComprobar == 0)
+					{
+						myDivisors.add(divisorComprobar);
+					}
+				}
+				catch(ArithmeticException ae)
+				{
+					System.out.println("Error: "+ae);
+				}	
+				divisorComprobar++;
+				
+			}
+			numAnteriorEsp=contadorNormal;
+			
+			//System.out.println("Soy el Thread:"+divisorComprobar);
+		}
+	}
+	
+	//para crearlo dependiendo los threads
+	public void createThread(int p, int countNormal, int countAux, int num){
+		
+		while(contadorEsp < p)//para hacerlo p veces
+		{
+			int variable = 0;
+			if(contadorEsp == p-1)
+			{
+				variable = countAux; //si es la ultima vez que lo va a hacer entonces ese thread tendra mas numeros que hacer
+			}
+			//aqui hacer el nuevo thread afuera del for con base a contador en lugar de i
+			myThreads.add(contadorEsp, new Thread(new ThreadRul(contadorDivisorEsp,num, countNormal, variable, p)));
+			myThreads.get(contadorEsp).start();
+			try
+		   	{
+		   		myThreads.get(contadorEsp).join();
+		   	}
+		   	catch (InterruptedException ie)
+		   	{
+		   		System.out.println("Error: "+ie);	
+		   	}
+			
+			/*
+			//en el for mandarle parametros a ese hilo
+			for(int i=0; i<countNormal+variable;i++){
+				contadorDivisor++;
+				
+				//como cambiarle los parametros al thread?
+		   		//y correrlo
+		   	}
+		   	
+		   	//pribablemente cambiar este for, ya sea sin for o afuera del while
+		   	for(int i =0; i<p;i++){
+		   		try
+		   		{
+		   			myThreads.get(i).join();
+		   		}
+		   		catch (InterruptedException ie)
+		   		{
+		   			System.out.println("Error: "+ie);	
+		   		}
+			}*/
+			contadorEsp++;
+			contadorDivisorEsp++;
+		}
+		for(int i =0; i<p;i++){
+		   		
+		}
+	}
+	
+	public void printArrayDivisor(){
+		for(int i = 0; i<myDivisors.size();i++){
+	   		System.out.println(myDivisors.get(i)+", ");
+	   	}
+	}
+	
+	public int countThread(int p,int n){
+		int resultado = n/p;
+		System.out.println(resultado);
+		return resultado;
+	}
+	
+	public int countThreadAux(int p,int n, int cuenta){
+		int resultado = n-(cuenta * p);
+		System.out.println(resultado);
+		return resultado;
+	}
+	
+	public void checkIfNumberPerfect(ArrayList<Integer> list,int n) {
+		
+		int suma=0;
+		System.out.print("Lista de divisores: ");
+		for(int i=0;i<list.size();i++) {
+			System.out.print(list.get(i)+" ");
+			suma=suma+list.get(i);
+		}
+		if(suma==n) {
+			System.out.println("\nEl numero "+n+ " si es un numero perfecto . . . ");
+		}
+		else {
+			System.out.println("\nEl numero "+n+ " no es un numero perfecto . . . ");
+		}
+		
+	}
+	
+	public static void main(String args[]){
+		Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+    	System.out.println("Enter number n");
+
+	    int n = myObj.nextInt();  // Read user input
+	    
+	    Scanner myObj2 = new Scanner(System.in);  // Create a Scanner object
+    	System.out.println("Enter number p");
+
+	    int p = myObj2.nextInt();  // Read user input
+	    
+	   	PerfectNumberUsingFor objT = new PerfectNumberUsingFor();
+	   	
+	   	int countNormal = objT.countThread(p,n);
+	   	int countAux = objT.countThreadAux(p,n,countNormal);
+	   	//objT.createThread(p);	
+	   	objT.createThread(p,countNormal,countAux,n);   	
+	   	objT.printArrayDivisor();
+	   
+	   	objT.checkIfNumberPerfect(objT.myDivisors,n);
+	   	
+    }
+}
